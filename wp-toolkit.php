@@ -20,10 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Change default log file location.
 ini_set( 'error_log', CJ_APP_DIR . '/logs/debug.log' );
 
-/*
- * If a custom default theme isn't defined, register
- * the default theme folder path as a fallback.
- */
+// If a custom default theme isn't defined, register
+// the default theme folder path as a fallback.
 if ( ! defined( 'WP_DEFAULT_THEME' ) ) {
 	register_theme_directory( ABSPATH . 'wp-content/themes' );
 }
