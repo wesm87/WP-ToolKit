@@ -148,10 +148,13 @@ class ThemeBase extends Core\BaseClass {
 
 		// Get the TypeKit URL.
 		$script_src = $this->get_typekit_url();
+
+		// @codingStandardsIgnoreStart
 		?>
 		<script src="<?php echo $script_src; ?>"></script>
 		<script>try{Typekit.load({async: <?php echo $async; ?>});}catch(e){}</script>
 		<?php
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**
@@ -164,8 +167,8 @@ class ThemeBase extends Core\BaseClass {
 		  || ( 'footer' === $location && $action = 'wp_footer' )
 		) {
 			// Make sure we only output the embed code once.
-			do_action( 'enable_typekit' );
-			if ( did_action( 'enable_typekit' ) === 1 ) {
+			if ( 0 === did_action( 'enable_typekit' ) ) {
+				do_action( 'enable_typekit' );
 				$this->add_action( $action, 'output_typekit_embed_code', 1 );
 			}
 		}

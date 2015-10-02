@@ -48,10 +48,17 @@ class RelativeLinksMod extends ModsBase {
 	}
 
 	/**
-	 * Check whether we should rewrite the URLs on the current page.
+	 * Check whether we should rewrite the links on the current page.
 	 */
 	protected function enable_relative_urls() {
-		return ! ( is_admin() || preg_match( '/sitemap(_index)?\.xml/', $_SERVER['REQUEST_URI'] ) || in_array( $GLOBALS['pagenow'], [ 'wp-login.php', 'wp-register.php' ] ) );
+		// @codingStandardsIgnoreStart
+		$request_uri = sanitize_key( $_SERVER['REQUEST_URI'] );
+		// @codingStandardsIgnoreEnd
+
+		$is_sitemap_url = preg_match( '/sitemap(_index)?\.xml/', $request_uri );
+		$is_register_or_login_url = in_array( $GLOBALS['pagenow'], [ 'wp-login.php', 'wp-register.php' ] );
+
+		return ! ( is_admin() || $is_sitemap_url || $is_register_or_login_url );
 	}
 
 	/**

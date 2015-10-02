@@ -122,7 +122,10 @@ class ThemeMods extends ModsBase {
 			if ( 0 === did_action( 'output_jquery_local_fallback' ) ) {
 				do_action( 'output_jquery_local_fallback' );
 				$fallback_source = apply_filters( 'script_loader_src', includes_url( '/js/jquery/jquery.js' ), 'jquery-fallback' );
-				echo '<script>window.jQuery || document.write(\'<script src="' . $fallback_source .'"><\/script>\')</script>' . "\n";
+
+				// @codingStandardsIgnoreStart
+				echo '<script>window.jQuery || document.write(\'<script src="' . esc_url( $fallback_source ) .'"><\/script>\')</script>' . "\n";
+				// @codingStandardsIgnoreEnd
 			}
 		}
 

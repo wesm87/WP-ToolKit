@@ -40,8 +40,15 @@ class SiteMods extends ModsBase {
 			return;
 		}
 
+		// @codingStandardsIgnoreStart
+		$request_uri = sanitize_key( $_SERVER['REQUEST_URI'] );
+		// @codingStandardsIgnoreEnd
+
+		// Check whether the search URL has already been rewritten.
 		$search_base = $wp_rewrite->search_base;
-		if ( is_search() && ! is_admin() && false === strpos( $_SERVER['REQUEST_URI'], "/{$search_base}/" ) ) {
+		$is_new_search_url = ( 0 === strcmp( $request_uri, $search_base ) );
+
+		if ( is_search() && ! is_admin() && ! $is_new_search_url ) {
 			wp_redirect( get_search_link() );
 			exit();
 		}

@@ -69,11 +69,12 @@ class RecentPostsWidget extends \WP_Widget {
 	 */
 	public function form( $instance ) {
 		$numposts = $instance['numposts'] ?: 4;
+		$numposts_field_name = $this->get_field_name( 'numposts' );
 		?>
 		<p>
 			<label>
-				<?php _e( 'Number of Posts:' ); ?>
-				<input class="widefat" name="<?php echo $this->get_field_name( 'numposts' ); ?>" type="number" value="<?php echo esc_attr( $numposts ); ?>">
+				<?php escape_html_e( 'Number of Posts:' ); ?>
+				<input class="widefat" name="<?php echo esc_attr( $numposts_field_name ) ?>" type="number" value="<?php echo esc_attr( $numposts ); ?>">
 			</label>
 		</p>
 		<?php
