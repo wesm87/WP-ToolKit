@@ -20,6 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class BaseClass {
 	/**
 	 * Constructor.
+	 * @uses $this::add_action()
 	 */
 	public function __construct() {
 		$this->add_action( 'init', 'on_wp_init' );
@@ -34,16 +35,18 @@ class BaseClass {
 	 *
 	 * @param string     $name The name of the function that was called.
 	 * @param array|null $arguments An array containing the arguments that were passed to the function.
+	 * @uses $this::get_function()
+	 * @uses WPTK\Utils\log()
 	 */
 	public function __call( $name, $arguments = null ) {
 		$function = $this->get_function( $name );
 
 		if ( is_wp_error( $function ) ) {
-			log( "Function {$name} not found inside class or within current or global namespaces." );
+			Utils\log( "Function {$name} not found inside class or within current or global namespaces." );
 			return false;
 		}
 
-		call_user_func_array( $function, $arguments );
+		return call_user_func_array( $function, $arguments );
 	}
 
 	/**
@@ -71,7 +74,7 @@ class BaseClass {
 	 * Enables a custom site / theme / plugin mod.
 	 *
 	 * @param string $mod The name of the mod you want to enable.
-	 * @uses Utils\enable_mod
+	 * @uses WPTK\Utils\enable_mod()
 	 */
 	public function enable_mod( $mod ) {
 		return Utils\enable_mod( $mod );
@@ -82,8 +85,7 @@ class BaseClass {
 	 * one individually.
 	 *
 	 * @param array $mods An array of mods you want to enable.
-	 * @uses enable_mods
-	 * @uses Utils\enable_mods
+	 * @uses WPTK\Utils\enable_mods()
 	 */
 	public function enable_mods( $mods ) {
 		return Utils\enable_mods( $mods );
@@ -93,6 +95,7 @@ class BaseClass {
 	 * Returns true if the specified mod is enabled, or fale if not.
 	 *
 	 * @param string $mod The name of the mod you want to check.
+	 * @uses WPTK\Utils\is_mod_enabled()
 	 */
 	public function is_mod_enabled( $mod ) {
 		return Utils\is_mod_enabled( $mod );
@@ -101,68 +104,19 @@ class BaseClass {
 	/**
 	 * Checks to see if the function object that was passed exists and is
 	 * callable, and if not, tries to locate the function in another scope.
-	 * Checks the current class first, then the local namespace, then the
-	 * global namespace.
+	 * Looks in $object first (or the current class if nothing was passed),
+	 * then the local namespace, then the global namespace.
 	 *
 	 * @param string|array|Closure $function_arg The function object to check against.
+	 * @param mixed                $object       An object or class instance to check for our function before we look anywhere else.
+	 * @uses WPTK\Utils\get_function()
 	 */
-	public function get_function( $function_arg ) {
-		$is_fn_name	= ( \is_string( $function_arg ) );
-		$is_fn_array   = ( \is_array( $function_arg ) );
-		$is_closure	= ( $function_arg instanceof \Closure );
-
-		if ( $is_fn_name ) {
-			/*
-			 * Check for function first inside this class
-			 * If not found, check the local namespace
-			 * If not found, check the global namespace
-			 */
-			$function_name = $is_fn_name;
-			$function_list = array(
-				array( $this, $function_arg ),
-				$function_arg,
-				"\{$function_arg}",
-			);
-		} else if ( $is_fn_array || $is_closure ) {
-			/*
-			 * Check if valid ( Class, method ) or ( $instance, method )
-			 * array was passed, or if a closure was passed
-			 */
-			$function_name = ( $is_fn_array ) ? $function_arg[0] : 'closure';
-			$function_list = array(
-				$function_arg,
-			);
-
-			if ( $is_closure ) {
-				$function_arg = '{closure}';
-			}
+	public function get_function( $function_arg, $object = null ) {
+		if ( ! $object || empty( $object ) ) {
+			$object = $this;
 		}
 
-		if ( ! empty( $function_list ) ) {
-			foreach ( $function_list as $function ) {
-				if ( is_callable( $function ) ) {
-					$fn_exists = (
-						is_array( $function ) && method_exists( $function[0], $function[1] )
-					 || is_string( $function ) &&\function_exists( $function )
-					);
-					if ( $fn_exists ) {
-						return $function;
-					}
-				}
-			}
-		}
-
-		/*
-		 * If we haven't found a valid function, log an error message
-		 * and return it in a WP_Error() object
-		 */
-
-		$error_message = "Could not find function with name \"{$function_arg}\". Ensure that the function exists either in the global scope or inside the main theme class, and double-check your code for spelling errors";
-		$wp_errors = new WP_Error();
-		$wp_errors->add( 'function_not_found', $error_message );
-		log( $wp_errors );
-
-		return $wp_errors;
+		return Utils\get_function( $function_arg, $object );
 	}
 
 	/**
@@ -201,7 +155,7 @@ class BaseClass {
 			foreach ( $errors as $error_data ) {
 				list( $code, $message ) = $error_data;
 				$wp_errors->add( $code, $message );
-				log( "{$code} :: {$message}" );
+				Utils\log( "{$code} :: {$message}" );
 			}
 			return $wp_errors;
 		}
@@ -230,6 +184,7 @@ class BaseClass {
 	 * @param mixed  $callback      A valid callback function.
 	 * @param int    $priority      The callback priority.
 	 * @param int    $accepted_args The number of arguments your callback accepts.
+	 * @uses $this::add_remove_hook()
 	 */
 	public function add_remove_hooks( $action, $hook_type, $hook_names, $callback, $priority, $accepted_args ) {
 		foreach ( (array) $hook_names as $hook_name ) {
@@ -245,6 +200,7 @@ class BaseClass {
 	 * @param mixed  $callback      A valid callback function.
 	 * @param int    $priority      The callback priority.
 	 * @param int    $accepted_args The number of arguments your callback accepts.
+	 * @uses $this::add_remove_hook()
 	 */
 	public function add_hook( $hook_type, $hook_name, $callback, $priority, $accepted_args ) {
 		$this->add_remove_hook( 'add', $hook_type, $hook_name, $callback, $priority, $accepted_args );
@@ -258,6 +214,7 @@ class BaseClass {
 	 * @param mixed  $callback      A valid callback function.
 	 * @param int    $priority      The callback priority.
 	 * @param int    $accepted_args The number of arguments your callback accepts.
+	 * @uses $this::add_remove_hook()
 	 */
 	public function add_hooks( $hook_type, $hook_names, $callback, $priority, $accepted_args ) {
 		foreach ( (array) $hook_names as $hook_name ) {
@@ -273,6 +230,7 @@ class BaseClass {
 	 * @param mixed  $callback      A valid callback function.
 	 * @param int    $priority      The callback priority.
 	 * @param int    $accepted_args The number of arguments your callback accepts.
+	 * @uses $this::add_remove_hook()
 	 */
 	public function remove_hook( $hook_type, $hook_name, $callback, $priority, $accepted_args ) {
 		$this->add_remove_hook( 'remove', $hook_type, $hook_name, $callback, $priority, $accepted_args );
@@ -286,6 +244,7 @@ class BaseClass {
 	 * @param mixed  $callback      A valid callback function.
 	 * @param int    $priority      The callback priority.
 	 * @param int    $accepted_args The number of arguments your callback accepts.
+	 * @uses $this::add_remove_hook()
 	 */
 	public function remove_hooks( $hook_type, $hook_names, $callback, $priority, $accepted_args ) {
 		foreach ( (array) $hook_names as $hook_name ) {
@@ -300,6 +259,7 @@ class BaseClass {
 	 * @param mixed  $callback      A valid callback function.
 	 * @param int    $priority      The callback priority.
 	 * @param int    $accepted_args The number of arguments your callback accepts.
+	 * @uses $this::add_hook()
 	 */
 	public function add_action( $action, $callback, $priority = 10, $accepted_args = 1 ) {
 		$this->add_hook( 'action', $action, $callback, $priority, $accepted_args );
@@ -312,6 +272,7 @@ class BaseClass {
 	 * @param mixed  $callback      A valid callback function.
 	 * @param int    $priority      The callback priority.
 	 * @param int    $accepted_args The number of arguments your callback accepts.
+	 * @uses $this::add_hooks()
 	 */
 	public function add_actions( $actions, $callback, $priority = 10, $accepted_args = 1 ) {
 		$this->add_hooks( 'action', $actions, $callback, $priority, $accepted_args );
@@ -324,6 +285,7 @@ class BaseClass {
 	 * @param mixed  $callback      A valid callback function.
 	 * @param int    $priority      The callback priority.
 	 * @param int    $accepted_args The number of arguments your callback accepts.
+	 * @uses $this::remove_hook()
 	 */
 	public function remove_action( $action_name, $callback, $priority = 10, $accepted_args = 1 ) {
 		$this->remove_hook( 'action', $action_name, $callback, $priority, $accepted_args );
@@ -336,6 +298,7 @@ class BaseClass {
 	 * @param mixed  $callback      A valid callback function.
 	 * @param int    $priority      The callback priority.
 	 * @param int    $accepted_args The number of arguments your callback accepts.
+	 * @uses $this::remove_hooks()
 	 */
 	public function remove_actions( $action_names, $callback, $priority = 10, $accepted_args = 1 ) {
 		$this->remove_hooks( 'action', $action_names, $callback, $priority, $accepted_args );
@@ -348,6 +311,7 @@ class BaseClass {
 	 * @param mixed  $callback      A valid callback function.
 	 * @param int    $priority      The callback priority.
 	 * @param int    $accepted_args The number of arguments your callback accepts.
+	 * @uses $this::add_hook()
 	 */
 	public function add_filter( $filter, $callback, $priority = 10, $accepted_args = 1 ) {
 		$this->add_hook( 'filter', $filter, $callback, $priority, $accepted_args );
@@ -360,6 +324,7 @@ class BaseClass {
 	 * @param mixed  $callback      A valid callback function.
 	 * @param int    $priority      The callback priority.
 	 * @param int    $accepted_args The number of arguments your callback accepts.
+	 * @uses $this::add_hooks()
 	 */
 	public function add_filters( $filters, $callback, $priority = 10, $accepted_args = 1 ) {
 		$this->add_hooks( 'filter', $filters, $callback, $priority, $accepted_args );
@@ -372,6 +337,7 @@ class BaseClass {
 	 * @param mixed  $callback      A valid callback function.
 	 * @param int    $priority      The callback priority.
 	 * @param int    $accepted_args The number of arguments your callback accepts.
+	 * @uses $this::remove_hook()
 	 */
 	public function remove_filter( $filter, $callback, $priority = 10, $accepted_args = 1 ) {
 		$this->remove_hook( 'filter', $filter, $callback, $priority, $accepted_args );
@@ -384,6 +350,7 @@ class BaseClass {
 	 * @param mixed  $callback      A valid callback function.
 	 * @param int    $priority      The callback priority.
 	 * @param int    $accepted_args The number of arguments your callback accepts.
+	 * @uses $this::remove_hooks()
 	 */
 	public function remove_filters( $filters, $callback, $priority = 10, $accepted_args = 1 ) {
 		$this->remove_hook( 'filter', $filters, $callback, $priority, $accepted_args );

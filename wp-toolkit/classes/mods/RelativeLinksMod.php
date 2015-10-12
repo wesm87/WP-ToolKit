@@ -41,8 +41,6 @@ class RelativeLinksMod extends ModsBase {
 				'style_loader_src',
 			];
 
-			Utils\log( $link_filters );
-
 			$this->add_filters( $link_filters, 'make_link_relative' );
 		}
 	}

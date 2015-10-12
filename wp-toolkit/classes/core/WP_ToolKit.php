@@ -8,6 +8,8 @@
 namespace WPTK\Core;
 use WPTK\Utils;
 use WPTK\Mods;
+use WPTK\Plugin;
+use WPTK\Theme;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The main WP_ToolKit class.
  */
-class WP_ToolKit extends PluginBase {
+class WP_ToolKit extends Plugin\PluginBase {
 	/**
 	 * Constructor.
 	 **/

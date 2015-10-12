@@ -15,14 +15,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * An example widget that shows your most recent posts.
  */
-class RecentPostsWidget extends \WP_Widget {
+class WPTK_RecentPostsWidget extends \WP_Widget {
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 		parent::__construct(
-			'cj_recent_posts_widget',
-			__( 'ColorJar - Recent Posts', 'text_domain' )
+			'wptk_recent_posts_widget',
+			__( 'WPTK - Recent Posts', 'text_domain' )
 		);
 	}
 
@@ -44,13 +44,13 @@ class RecentPostsWidget extends \WP_Widget {
 				<div class="content recent-posts">
 					<?php while ( $recent_posts_query->have_posts() ) : ?>
 						<?php $recent_posts_query->the_post(); ?>
-						<div <?php \post_class( 'entry-container' ); ?>>
+						<div <?php post_class( 'entry-container' ); ?>>
 							<div class="entry recent-post">
-								<a class="entry-title" href="<?php \the_permalink(); ?>">
-									<?php \the_title(); ?>
+								<a class="entry-title" href="<?php the_permalink(); ?>">
+									<?php the_title(); ?>
 								</a>
 								<div class="entry-content">
-									<?php \the_content(); ?>
+									<?php the_content(); ?>
 								</div>
 							</div>
 						</div>

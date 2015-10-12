@@ -38,6 +38,7 @@ class Autoloader {
 	 */
 	public function load_class( $ns_and_class ) {
 		$ds = DIRECTORY_SEPARATOR;
+		$base_path = ( ! empty( static::$base_path ) ? static::$base_path : __DIR__ );
 
 		// Split the namespace up into chunks.
 		$parts = explode( '\\', $ns_and_class );
@@ -50,25 +51,27 @@ class Autoloader {
 
 		// Stop if the namespace root doesn't match the plugin namespace.
 		if ( 'WPTK' !== $root_ns ) {
-			return false;
+			return null;
 		}
 
 		// Convert the namespace parts to lower-case.
 		$namespace_parts = array_map( 'strtolower', $parts );
 
-		// Prepend the plugin and class folders.
-		array_unshift( $namespace_parts, 'wp-toolkit', 'classes' );
+		// Prepend the base path and the class folder.
+		array_unshift( $namespace_parts, $base_path, 'classes' );
+
+		// Append the class name.
+		array_push( $namespace_parts, $class_name );
 
 		// Re-assamble the namespace parts into a file path.
-		$namespace_path = implode( $ds, $namespace_parts );
-
-		// Prepend the base path and append the class filename.
-		$base_path = ( ! empty( static::$base_path ) ? static::$base_path : __DIR__ );
-		$class_file = $base_path . $ds . $namespace_path . $ds . $class_name . '.php';
+		$class_file = implode( $ds, $namespace_parts ) . '.php';
 
 		// Include the class file if it exists.
 		if ( file_exists( $class_file ) ) {
 			require_once( $class_file );
+			return true;
 		}
+
+		return false;
 	}
 }

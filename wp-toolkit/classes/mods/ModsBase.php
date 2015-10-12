@@ -22,6 +22,6 @@ class ModsBase extends Core\BaseClass {
 	 * Constructor.
 	 */
 	public function __construct() {
-		Utils\log( 'ModsBase class initialized' );
+		// Utils\log( 'ModsBase class initialized' );
 	}
 }

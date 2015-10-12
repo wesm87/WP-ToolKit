@@ -23,8 +23,8 @@ class SiteMods extends ModsBase {
 		/**
 		 * Disable search indexing if not on production server
 		 */
-		if ( WP_ENV !== 'production' && ! \is_admin() ) {
-			\add_action( 'pre_option_blog_public', '__return_zero' );
+		if ( WP_ENV !== 'production' && ! is_admin() ) {
+			add_action( 'pre_option_blog_public', '__return_zero' );
 		}
 
 		$this->add_action( 'template_redirect', 'search_redirect' );
@@ -60,6 +60,6 @@ class SiteMods extends ModsBase {
 	 * @param string $url The default search URL.
 	 */
 	public function search_rewrite( $url ) {
-		return \str_replace( '/?s=', '/search/', $url );
+		return str_replace( '/?s=', '/search/', $url );
 	}
 }

@@ -36,13 +36,13 @@ class AdminBase extends Core\BaseClass {
 	 * Constructor.
 	 */
 	public function __construct() {
-		if ( ! \is_admin() ) {
+		if ( ! is_admin() ) {
 			return;
 		}
 
 		parent::__construct();
 
-		log( 'AdminBase init' );
+		Utils\log( 'AdminBase init' );
 
 		$this->add_action( 'admin_init', 'on_admin_init' );
 
@@ -100,7 +100,7 @@ class AdminBase extends Core\BaseClass {
 		if ( function_exists( 'acf_add_options_page' ) ) {
 			return acf_add_options_page( $page );
 		} else {
-			log( 'acf_add_options_page() not found' );
+			Utils\log( 'acf_add_options_page() not found' );
 		}
 	}
 }

@@ -39,7 +39,7 @@ class NavMods extends ModsBase {
 		$classes = preg_replace( '/(current(-menu-|[-_]page[-_])(item|parent|ancestor))/', 'is-active', $classes );
 		$classes = preg_replace( '/^((menu|page)[-_\w+]+)+/', '', $classes );
 		$classes = preg_replace( '/^active/', 'is-active', $classes );
-		$classes[] = 'menu__item';
+		$classes[] = 'menu-item';
 		$classes = array_unique( $classes );
 
 		return array_filter( $classes, function( $element ) {
@@ -56,7 +56,7 @@ class NavMods extends ModsBase {
 	 * @return array
 	 */
 	public function nav_menu_link_attributes( $atts, $item ) {
-		$atts['class'] = 'menu__link';
+		$atts['class'] = 'menu-link';
 		$atts['role'] = 'menuitem';
 
 		return $atts;
