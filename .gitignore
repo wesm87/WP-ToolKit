@@ -1,4 +1,4 @@
-
-wp-toolkit/bin/
-wp-toolkit/includes/
+.svn
+wp-toolkit/unit-tests/phpunit/bin/
+wp-toolkit/unit-tests/phpunit/includes/
 wp-toolkit/wp-tests-config.php

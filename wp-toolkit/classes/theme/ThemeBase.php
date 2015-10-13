@@ -7,6 +7,7 @@
 
 namespace WPTK\Theme;
 use WPTK\Core;
+use WPTK\Utils;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -76,10 +77,15 @@ class ThemeBase extends Core\BaseClass {
 	}
 
 	/**
-	 * Called when the "init" action fires.
+	 * Dev-related scripts and styles.
 	 */
-	public function on_wp_init() {
-
+	public function add_scripts_and_styles() {
+		if ( 'development' === WP_ENV ) {
+			Utils\enqueue_script( 'modernizr', 'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js', [], null, false );
+		} else {
+			// Local version goes here (should be customized for each site).
+			Utils\enqueue_script( 'modernizr', 'modernizr.min.js', [], null, false );
+		}
 	}
 
 	/**
