@@ -22,7 +22,7 @@ class WPTK_RecentPostsWidget extends \WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'wptk_recent_posts_widget',
-			__( 'WPTK - Recent Posts', 'text_domain' )
+			__( 'WPTK - Recent Posts', 'wp-toolkit' )
 		);
 	}
 
@@ -73,7 +73,7 @@ class WPTK_RecentPostsWidget extends \WP_Widget {
 		?>
 		<p>
 			<label>
-				<?php escape_html_e( 'Number of Posts:' ); ?>
+				<?php esc_html_e( 'Number of Posts:', 'wp-toolkit' ); ?>
 				<input class="widefat" name="<?php echo esc_attr( $numposts_field_name ) ?>" type="number" value="<?php echo esc_attr( $numposts ); ?>">
 			</label>
 		</p>
